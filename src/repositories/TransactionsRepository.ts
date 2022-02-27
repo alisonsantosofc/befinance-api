@@ -1,8 +1,13 @@
 import Transaction from '../models/Transaction';
 
+interface CreateTransactionDTO {
+  title: string;
+  value: number;
+  type: 'incoming' | 'outbound';
+}
 interface Balance {
-  income: number;
-  outcome: number;
+  incoming: number;
+  outbound: number;
   total: number;
 }
 
@@ -14,15 +19,47 @@ class TransactionsRepository {
   }
 
   public all(): Transaction[] {
-    // TODO
+    return this.transactions;
   }
 
   public getBalance(): Balance {
-    // TODO
+    const { incoming, outbound } = this.transactions.reduce(
+      (accumulator: Balance, transaction: Transaction) => {
+        switch (transaction.type) {
+          case 'incoming':
+            accumulator.incoming += transaction.value;
+            break;
+          case 'outbound':
+            accumulator.outbound += transaction.value;
+            break;
+          default:
+            break;
+        }
+
+        return accumulator;
+      },
+      {
+        incoming: 0,
+        outbound: 0,
+        total: 0,
+      }
+    );
+
+    const total = incoming - outbound;
+
+    return { incoming, outbound, total };
   }
 
-  public create(): Transaction {
-    // TODO
+  public create({ title, value, type }: CreateTransactionDTO): Transaction {
+    const transaction = new Transaction({
+      title,
+      value,
+      type,
+    });
+
+    this.transactions.push(transaction);
+
+    return transaction;
   }
 }
 
