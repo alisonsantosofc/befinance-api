@@ -1,20 +1,17 @@
-import { v4 as uuid } from 'uuid';
-
 class Transaction {
   id: string;
 
   title: string;
 
+  type: 'income' | 'outcome';
+
   value: number;
 
-  type: 'incoming' | 'outbound';
+  category_id: string;
 
-  constructor({ title, value, type }: Omit<Transaction, 'id'>) {
-    this.id = uuid();
-    this.title = title;
-    this.value = value;
-    this.type = type;
-  }
+  created_at: Date;
+
+  updated_at: Date;
 }
 
 export default Transaction;
