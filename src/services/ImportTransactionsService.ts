@@ -30,7 +30,7 @@ class ImportTransactionsService {
     const transactions: TransactionCSV[] = [];
     const categories: string[] = [];
 
-    parseCSV.on('data', async (line) => {
+    parseCSV.on('data', async line => {
       const [title, type, value, category] = line.map((cell: string) =>
         cell.trim()
       );
@@ -46,7 +46,7 @@ class ImportTransactionsService {
       transactions.push({ title, type, value, category });
     });
 
-    await new Promise((resolve) => parseCSV.on('end', resolve));
+    await new Promise(resolve => parseCSV.on('end', resolve));
 
     const existentCategories = await categoriesRepository.find({
       where: {
@@ -59,11 +59,11 @@ class ImportTransactionsService {
     );
 
     const addCategoriesTitle = categories
-      .filter((category) => !existentCategoriesTitle.includes(category))
+      .filter(category => !existentCategoriesTitle.includes(category))
       .filter((value, index, self) => self.indexOf(value) === index);
 
     const newCategories = categoriesRepository.create(
-      addCategoriesTitle.map((title) => ({
+      addCategoriesTitle.map(title => ({
         title,
       }))
     );
@@ -73,12 +73,12 @@ class ImportTransactionsService {
     const allCategories = [...existentCategories, ...newCategories];
 
     const newTransactions = transactionsRepository.create(
-      transactions.map((transaction) => ({
+      transactions.map(transaction => ({
         title: transaction.title,
         type: transaction.type,
         value: transaction.value,
         category: allCategories.find(
-          (category) => category.title === transaction.category
+          category => category.title === transaction.category
         ),
       }))
     );
